@@ -16,7 +16,7 @@ $ sudo apt-get install oracle-java8-installer -y
 $ export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 #Update the /etc/hosts file for all the nodes and ensure password-less ssh between master and all the slave nodes.
 #You can copy all of the above commands into a .sh file, and run it together
-`
+</pre>
 
 1. Install Apache Mesos, by running the mesos_master.sh script on the master and mesos_slave.sh script on the slaves. Make sure the ip addresses are updated in the script before you run them.
 
