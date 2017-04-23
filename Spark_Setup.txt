@@ -1,0 +1,34 @@
+*************************************************************************************************************************
+						Spark-mesos instructions
+*************************************************************************************************************************
+1. Install Mesosphere/Mesos, zookeeper, Spark, Scala and Hadoop DFS. Update the environment variables on all the nodes. Use the existing zip for Hadoop and Spark setup. Make sure you setup Scala on all the nodes too.
+
+2. Compress spark directory. Add that and the required jar files to HDFS
+$ hadoop fs -put spark.tar.gz /tmp/
+$ hadoop fs -put lib/spark-examples-1.6.1-hadoop2.6.0.jar /tmp/ 
+
+3. Modify conf/spark-defaults.conf and add the following lines.
+spark.master mesos://zk://masternode:2181/mesos
+spark.executor.uri hdfs:///tmp/spark.tar.gz
+
+4. Add the following lines to conf/spark-env.sh
+MESOS_NATIVE_JAVA_LIBRARY=/usr/local/lib/libmesos.so
+SPARK_EXECUTOR_URI=hdfs:///tmp/spark.tar.gz
+HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+SPARK_MASTER_IP=masternode
+
+5. Add the following line in /etc/default/mesos-slave file on all the mesos agents.
+MESOS_hadoop_home="/usr/local/hadoop"
+
+6. Start the mesos dispatcher script and make sure "Spark cluster" appears in Mesos Frameworks tab on the Web UI - localhost:5050
+$ ./sbin/start-mesos-dispatcher.sh --master mesos://masternode:5050
+
+7. Submit an example PiEstimator job to the Mesos cluster and 
+$ ./bin/spark-submit --class org.apache.spark.examples.SparkPi --master mesos://masternode:7077 --deploy-mode cluster --supervise hdfs:///tmp/spark-examples-1.6.1-hadoop2.6.0.jar 10
+
+8. To run the Spark shell,
+$ ./bin/spark-shell --master mesos://masternode:5050
+
+The above command will work, since spark-shell uses the dependencies mentioned in the conf/spark-default.conf configuration file.  	
+
+9. To check logs, navigate to /var/log/mesos directory and examine the INFO log with the latest timestamp.

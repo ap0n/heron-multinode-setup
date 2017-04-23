@@ -1,0 +1,26 @@
+Port Storm topologies to Heron:
+1) Go to pom.xml of the storm project.
+Add these lines :
+<dependency>
+  <groupId>com.twitter.heron</groupId>
+  <artifactId>heron-storm</artifactId>
+  <version>0.14.0</version>
+  <scope>compile</scope>
+</dependency>
+<dependency>
+  <groupId>com.twitter.heron</groupId>
+  <artifactId>heron-api</artifactId>
+  <version>0.14.0</version>
+  <scope>compile</scope>
+</dependency>
+
+
+and Remove lines related to Storm and Clojure.
+
+2) Run the maven commands:
+$ mvn clean
+$ mvn compile
+$ mvn package
+
+3) Submit the topology to Heron, for example:
+$ heron submit aurora/root/devel ~/StormTweetsWordCount/target/storm-tweets-wordcount-0.1-jar-with-dependencies.jar org.p7h.storm.wordcount.topology.WordCountTopology WordCount --verbose
